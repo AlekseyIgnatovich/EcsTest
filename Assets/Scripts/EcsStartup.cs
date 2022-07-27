@@ -8,11 +8,34 @@ namespace Client {
 
         void Start () {
             _world = new EcsWorld ();
+            
+           
+            // Todo: отдельная система на создание игрока
+            int player = _world.NewEntity ();
+            var playerPool = _world.GetPool<Player>();
+            playerPool.Add (player);
+            var movementPool = _world.GetPool<Movement>();
+            movementPool.Add (player);
+            var positionPool = _world.GetPool<Position>();
+            positionPool.Add (player);
+            
+            
             _systems = new EcsSystems (_world);
             _systems
                 // register your systems here, for example:
                 // .Add (new TestSystem1 ())
                 // .Add (new TestSystem2 ())
+                
+                //SharedSystems
+                .Add(new MovementSystem())
+                //
+                
+                //ClientSystems
+                .Add(new PlayerInputSystem())
+                .Add(new IniSceneSystem())
+                .Add(new UpdateViewMovementSystem())
+                //.Add()
+                //
                 
                 // register additional worlds here, for example:
                 // .AddWorld (new EcsWorld (), "events")
