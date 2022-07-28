@@ -23,7 +23,8 @@ public class DoorsSystem : IEcsInitSystem, IEcsRunSystem
         {
             ref var door = ref doors.Get(entity);
             door.openProgress += 0.1f * Workaround.Deltatime();
-            door.openProgress = Mathf.Clamp(door.openProgress, 0, 1);
+            if(door.openProgress > 1)
+                door.openProgress = 1;
         }
     }
 }
