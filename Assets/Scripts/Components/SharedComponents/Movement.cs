@@ -2,5 +2,5 @@ using UnityEngine;
 
 public struct Movement
 {
-	public Vector3 moveInput;
+	public Vector3 targetPosition;
 }

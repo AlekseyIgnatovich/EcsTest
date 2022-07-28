@@ -1,24 +1,41 @@
 using Leopotam.EcsLite;
 using UnityEngine;
 
-public class PlayerInputSystem : IEcsRunSystem
+public class PlayerInputSystem : IEcsInitSystem, IEcsRunSystem
 {
-	private const string HorizontalAxisName = "Horizontal";
-	private const string VerticalAxisName = "Vertical";
+	private readonly LayerMask _inputMask = ~LayerMask.NameToLayer("Ground");
+	
+	private EcsWorld _world;
+	private Camera _camera;
+	
+	public void Init(IEcsSystems systems)
+	{
+		_world = systems.GetWorld();
+		_camera = Camera.main;
+	}
 
 	public void Run(IEcsSystems systems)
 	{
-		var filter = systems.GetWorld().Filter<Movement>().Inc<Player>().End();
-		var playerInputPool = systems.GetWorld().GetPool<Movement>();
-
-		foreach (var entity in filter)
+		if (Input.GetMouseButtonDown(0))
 		{
-			ref var playerInputComponent = ref playerInputPool.Get(entity);
+			RaycastHit hit;
+			Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-			var horizontal = Input.GetAxis(HorizontalAxisName);
-			var vertical = Input.GetAxis(VerticalAxisName);
+			if (Physics.Raycast(ray, out hit,100, _inputMask))
+			{
+				var filter = _world.Filter<Player>().End();
+				var movements = _world.GetPool<Movement>();
 
-			playerInputComponent.moveInput = new Vector3(horizontal, 0, vertical);
+				foreach (var entity in filter)
+				{
+					if (!movements.Has(entity)) {
+						movements.Add(entity);
+					}
+
+					ref var movement = ref movements.Get(entity);
+					movement.targetPosition = new Vector3(hit.point.x, 0, hit.point.z);
+				}
+			}
 		}
 	}
 }

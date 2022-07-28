@@ -1,12 +1,14 @@
 using Leopotam.EcsLite;
 
-public class MovementUpdateViewSystem : IEcsRunSystem
+public class MovementViewSystem : IEcsRunSystem
 {
     public void Run(IEcsSystems systems)
     {
-        var filter = systems.GetWorld().Filter<Position>().Inc<PositionViewReference>().End();
-        var movements = systems.GetWorld().GetPool<Position>();
-        var views = systems.GetWorld().GetPool<PositionViewReference>();
+        var world = systems.GetWorld();
+        
+        var filter = world.Filter<Position>().Inc<PositionViewReference>().End();
+        var movements = world.GetPool<Position>();
+        var views = world.GetPool<PositionViewReference>();
 
         foreach (var entity in filter)
         {

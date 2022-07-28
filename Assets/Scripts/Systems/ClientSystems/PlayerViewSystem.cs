@@ -1,14 +1,16 @@
 using Leopotam.EcsLite;
 using UnityEngine;
 
-public class PlayerInitViewSystem : IEcsInitSystem
+public class PlayerViewSystem : IEcsInitSystem
 {
     private const string PlayerTag = "Player";
     
     public void Init(IEcsSystems systems)
     {
-        var filter = systems.GetWorld().Filter<Player>().End();
-        var viewReferences = systems.GetWorld().GetPool<PositionViewReference>();
+        var world = systems.GetWorld();
+        
+        var filter = world.Filter<Player>().End();
+        var viewReferences = world.GetPool<PositionViewReference>();
 
         var playerView = GameObject.FindGameObjectWithTag(PlayerTag);
         foreach (var entity in filter)

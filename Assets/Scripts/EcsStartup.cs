@@ -25,8 +25,8 @@ namespace Client {
                 
                 //ClientSystems
                 .Add(new PlayerInputSystem())
-                .Add(new PlayerInitViewSystem())
-                .Add(new MovementUpdateViewSystem())
+                .Add(new PlayerViewSystem())
+                .Add(new MovementViewSystem())
                 .Add(new DoorsViewSystem())
                 //.Add()
                 //
