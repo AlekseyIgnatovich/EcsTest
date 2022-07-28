@@ -1,6 +1,6 @@
 using Leopotam.EcsLite;
 
-public class UpdateViewMovementSystem  : IEcsRunSystem
+public class MovementUpdateViewSystem : IEcsRunSystem
 {
     public void Run(IEcsSystems systems)
     {

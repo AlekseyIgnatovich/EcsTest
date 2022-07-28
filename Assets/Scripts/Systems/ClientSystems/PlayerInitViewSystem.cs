@@ -1,11 +1,11 @@
 using Leopotam.EcsLite;
 using UnityEngine;
 
-public class IniSceneSystem : IEcsPreInitSystem
+public class PlayerInitViewSystem : IEcsInitSystem
 {
     private const string PlayerTag = "Player";
     
-    public void PreInit(IEcsSystems systems)
+    public void Init(IEcsSystems systems)
     {
         var filter = systems.GetWorld().Filter<Player>().End();
         var viewReferences = systems.GetWorld().GetPool<PositionViewReference>();

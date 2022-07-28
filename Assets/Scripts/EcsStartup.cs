@@ -18,22 +18,27 @@ namespace Client {
             movementPool.Add (player);
             var positionPool = _world.GetPool<Position>();
             positionPool.Add (player);
+            ref var pos = ref positionPool.Get(player);
+            pos.radius = 0.5f;
             
-            
-            _systems = new EcsSystems (_world);
+            Config sharedData = new Config();
+            _systems = new EcsSystems (_world, sharedData);
             _systems
                 // register your systems here, for example:
                 // .Add (new TestSystem1 ())
                 // .Add (new TestSystem2 ())
                 
                 //SharedSystems
+                .Add(new ButtonsSystem())
+                .Add(new DoorsSystem())
                 .Add(new MovementSystem())
                 //
                 
                 //ClientSystems
                 .Add(new PlayerInputSystem())
-                .Add(new IniSceneSystem())
-                .Add(new UpdateViewMovementSystem())
+                .Add(new PlayerInitViewSystem())
+                .Add(new MovementUpdateViewSystem())
+                .Add(new DoorsViewSystem())
                 //.Add()
                 //
                 
