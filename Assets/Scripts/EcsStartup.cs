@@ -9,18 +9,6 @@ namespace Client {
         void Start () {
             _world = new EcsWorld ();
             
-           
-            // Todo: отдельная система на создание игрока
-            int player = _world.NewEntity ();
-            var playerPool = _world.GetPool<Player>();
-            playerPool.Add (player);
-            var movementPool = _world.GetPool<Movement>();
-            movementPool.Add (player);
-            var positionPool = _world.GetPool<Position>();
-            positionPool.Add (player);
-            ref var pos = ref positionPool.Get(player);
-            pos.radius = 0.5f;
-            
             Config sharedData = new Config();
             _systems = new EcsSystems (_world, sharedData);
             _systems
@@ -29,6 +17,7 @@ namespace Client {
                 // .Add (new TestSystem2 ())
                 
                 //SharedSystems
+                .Add(new PlayerSystem())
                 .Add(new ButtonsSystem())
                 .Add(new DoorsSystem())
                 .Add(new MovementSystem())
