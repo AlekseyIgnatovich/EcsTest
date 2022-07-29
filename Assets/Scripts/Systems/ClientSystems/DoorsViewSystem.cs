@@ -7,16 +7,20 @@ namespace Client
 {
     public class DoorsViewSystem : IEcsInitSystem, IEcsRunSystem
     {
+        private EcsWorld _world;
+        
         public void Init(IEcsSystems systems)
         {
-            var doors = systems.GetWorld().Filter<Door>().End();
+            _world = systems.GetWorld();
+            
+            var doorsFilter = _world.Filter<Door>().End();
 
-            var buttons = systems.GetWorld().GetPool<Button>();
-            var doorReferences = systems.GetWorld().GetPool<DoorViewReference>();
+            var buttons = _world.GetPool<Button>();
+            var doorReferences = _world.GetPool<DoorViewReference>();
 
             var doorViews = GameObject.FindObjectsOfType<DoorView>();
 
-            foreach (var entity in doors)
+            foreach (var entity in doorsFilter)
             {
                 string configId = buttons.Get(entity).configId;
                 var view = doorViews.FirstOrDefault(d => d.buttonConfigId == configId);
@@ -35,12 +39,12 @@ namespace Client
 
         public void Run(IEcsSystems systems)
         {
-            var doorEntities = systems.GetWorld().Filter<Pressed>().End();
+            var pressedFilter = _world.Filter<Pressed>().End();
 
-            var doors = systems.GetWorld().GetPool<Door>();
-            var doorReferences = systems.GetWorld().GetPool<DoorViewReference>();
+            var doors = _world.GetPool<Door>();
+            var doorReferences = _world.GetPool<DoorViewReference>();
 
-            foreach (var entity in doorEntities)
+            foreach (var entity in pressedFilter)
             {
                 var door = doors.Get(entity);
                 var view = doorReferences.Get(entity).doorView;

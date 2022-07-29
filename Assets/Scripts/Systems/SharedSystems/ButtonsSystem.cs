@@ -4,18 +4,20 @@ namespace Shared
 {
     public class ButtonsSystem : IEcsInitSystem, IEcsRunSystem
     {
+        private EcsWorld _world;
+        
         public void Init(IEcsSystems systems)
         {
-            var world = systems.GetWorld();
+            _world = systems.GetWorld();
             var config = systems.GetShared<Config>();
 
             for (int i = 0; i < config.buttons.Length; i++)
             {
-                int entity = world.NewEntity();
+                int entity = _world.NewEntity();
 
-                var buttons = world.GetPool<Button>();
+                var buttons = _world.GetPool<Button>();
                 buttons.Add(entity);
-                var positions = world.GetPool<Position>();
+                var positions = _world.GetPool<Position>();
                 positions.Add(entity);
 
                 ref var button = ref buttons.Get(entity);
@@ -28,11 +30,11 @@ namespace Shared
 
         public void Run(IEcsSystems systems)
         {
-            var filterButtons = systems.GetWorld().Filter<Button>().End();
-            var filterPlayer = systems.GetWorld().Filter<Player>().End();
+            var filterButtons = _world.Filter<Button>().End();
+            var filterPlayer = _world.Filter<Player>().End();
 
-            var positions = systems.GetWorld().GetPool<Position>();
-            var pressed = systems.GetWorld().GetPool<Pressed>();
+            var positions = _world.GetPool<Position>();
+            var pressed = _world.GetPool<Pressed>();
 
             foreach (var player in filterPlayer)
             {

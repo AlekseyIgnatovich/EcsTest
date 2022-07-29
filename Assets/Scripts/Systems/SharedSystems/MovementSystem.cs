@@ -7,6 +7,7 @@ namespace Shared
         private const float Speed = 2f;
 
         private ITimeProvider _timeProvider;
+        private EcsWorld _ecsWorld;
 
         public MovementSystem(ITimeProvider timeProvider)
         {
@@ -15,16 +16,16 @@ namespace Shared
         
         public void Run(IEcsSystems ecsSystems)
         {
-            EcsWorld world = ecsSystems.GetWorld();
+            _ecsWorld = ecsSystems.GetWorld();
 
-            var filter = world.Filter<Movement>().End();
-            var movementsPool = world.GetPool<Movement>();
-            var positionsPool = world.GetPool<Position>();
+            var movementsFilter = _ecsWorld.Filter<Movement>().End();
+            var movements = _ecsWorld.GetPool<Movement>();
+            var positions = _ecsWorld.GetPool<Position>();
 
-            foreach (var entity in filter)
+            foreach (var entity in movementsFilter)
             {
-                ref var position = ref positionsPool.Get(entity);
-                var movement = movementsPool.Get(entity);
+                ref var position = ref positions.Get(entity);
+                var movement = movements.Get(entity);
 
                 var distanceVector = movement.targetPosition - position.position;
                 var direction = distanceVector.normalized;
@@ -37,7 +38,7 @@ namespace Shared
                 else
                 {
                     position.position = movement.targetPosition;
-                    movementsPool.Del(entity);
+                    movements.Del(entity);
                 }
             }
         }

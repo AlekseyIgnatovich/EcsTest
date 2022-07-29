@@ -19,26 +19,23 @@ namespace Client
 
 		public void Run(IEcsSystems systems)
 		{
-			if (Input.GetMouseButtonDown(0))
+			if (!Input.GetMouseButtonDown(0)) return;
+
+			RaycastHit hit;
+			Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+			if (Physics.Raycast(ray, out hit, 100, _inputMask))
 			{
-				RaycastHit hit;
-				Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+				var playerFilter = _world.Filter<Player>().End();
+				var movements = _world.GetPool<Movement>();
 
-				if (Physics.Raycast(ray, out hit, 100, _inputMask))
+				foreach (var entity in playerFilter)
 				{
-					var filter = _world.Filter<Player>().End();
-					var movements = _world.GetPool<Movement>();
+					if (!movements.Has(entity))
+						movements.Add(entity);
 
-					foreach (var entity in filter)
-					{
-						if (!movements.Has(entity))
-						{
-							movements.Add(entity);
-						}
-
-						ref var movement = ref movements.Get(entity);
-						movement.targetPosition = new Vector3(hit.point.x, 0, hit.point.z);
-					}
+					ref var movement = ref movements.Get(entity);
+					movement.targetPosition = new Vector3(hit.point.x, 0, hit.point.z);
 				}
 			}
 		}

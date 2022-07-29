@@ -5,6 +5,7 @@ namespace Shared
     public class DoorsSystem : IEcsInitSystem, IEcsRunSystem
     {
         private ITimeProvider _timeProvider;
+        private EcsWorld _world;
 
         public DoorsSystem(ITimeProvider timeProvider)
         {
@@ -13,21 +14,23 @@ namespace Shared
 
         public void Init(IEcsSystems systems)
         {
-            var filterButtons = systems.GetWorld().Filter<Button>().End();
-            var doors = systems.GetWorld().GetPool<Door>();
+            _world = systems.GetWorld();
+            
+            var filterButtons = _world.Filter<Button>().End();
+            var doors = _world.GetPool<Door>();
 
-            foreach (var button in filterButtons)
+            foreach (var entity in filterButtons)
             {
-                doors.Add(button);
+                doors.Add(entity);
             }
         }
 
         public void Run(IEcsSystems systems)
         {
-            var filterButtons = systems.GetWorld().Filter<Pressed>().End();
-            var doors = systems.GetWorld().GetPool<Door>();
+            var filterPressed = _world.Filter<Pressed>().End();
+            var doors = _world.GetPool<Door>();
 
-            foreach (var entity in filterButtons)
+            foreach (var entity in filterPressed)
             {
                 ref var door = ref doors.Get(entity);
                 door.openProgress += 0.1f * _timeProvider.DeltaTime;

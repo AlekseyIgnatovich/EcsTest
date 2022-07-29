@@ -12,12 +12,12 @@ namespace Client
         {
             _world = systems.GetWorld();
 
-            var filter = _world.Filter<Player>().End();
+            var playerFilter = _world.Filter<Player>().End();
             var positionViews = _world.GetPool<PositionViewReference>();
             var playerViews = _world.GetPool<PlayerViewReference>();
 
             var player = GameObject.FindObjectOfType<PlayerView>();
-            foreach (var entity in filter)
+            foreach (var entity in playerFilter)
             {
                 positionViews.Add(entity);
 
@@ -31,12 +31,12 @@ namespace Client
 
         public void Run(IEcsSystems systems)
         {
-            var filter = _world.Filter<Player>().Inc<StateChanged>().End();
+            var stateChangedFilter = _world.Filter<StateChanged>().Inc<Player>().End();
 
             var playersPool = _world.GetPool<Player>();
             var playerViews = _world.GetPool<PlayerViewReference>();
 
-            foreach (var entity in filter)
+            foreach (var entity in stateChangedFilter)
             {
                 var player = playersPool.Get(entity);
                 var view = playerViews.Get(entity);

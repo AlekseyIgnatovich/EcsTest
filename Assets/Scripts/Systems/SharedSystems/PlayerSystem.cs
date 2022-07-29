@@ -19,28 +19,28 @@ namespace Shared
 
 		public void Run(IEcsSystems systems)
 		{
-			var filter = _world.Filter<Player>().End();
+			var playerFilter = _world.Filter<Player>().End();
 			var movements = _world.GetPool<Movement>();
 			var players = _world.GetPool<Player>();
-			var stateChangedPool = _world.GetPool<StateChanged>();
+			var stateChangedEvents = _world.GetPool<StateChanged>();
 
-			foreach (var entity in filter)
+			foreach (var entity in playerFilter)
 			{
-				if (stateChangedPool.Has(entity))
+				if (stateChangedEvents.Has(entity))
 				{
-					stateChangedPool.Del(entity);
+					stateChangedEvents.Del(entity);
 				}
 
 				ref var player = ref players.Get(entity);
 				if (movements.Has(entity) && player.state != PlayerState.Move)
 				{
-					stateChangedPool.Add(entity);
+					stateChangedEvents.Add(entity);
 					player.state = PlayerState.Move;
 				}
 
 				if (!movements.Has(entity) && player.state != PlayerState.Idle)
 				{
-					stateChangedPool.Add(entity);
+					stateChangedEvents.Add(entity);
 					player.state = PlayerState.Idle;
 				}
 			}
