@@ -6,6 +6,13 @@ namespace Shared
     {
         private const float Speed = 2f;
 
+        private ITimeProvider _timeProvider;
+
+        public MovementSystem(ITimeProvider timeProvider)
+        {
+            _timeProvider = timeProvider;
+        }
+        
         public void Run(IEcsSystems ecsSystems)
         {
             EcsWorld world = ecsSystems.GetWorld();
@@ -21,11 +28,11 @@ namespace Shared
 
                 var distanceVector = movement.targetPosition - position.position;
                 var direction = distanceVector.normalized;
-                var step = Speed * Workaround.Deltatime();
+                var step = Speed * _timeProvider.DeltaTime;
 
                 if (distanceVector.magnitude >= step)
                 {
-                    position.position += direction * (Speed * Workaround.Deltatime());
+                    position.position += direction * (Speed * _timeProvider.DeltaTime);
                 }
                 else
                 {

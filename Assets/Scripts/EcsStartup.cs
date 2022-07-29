@@ -11,14 +11,15 @@ namespace Client {
             _world = new EcsWorld ();
             
             Config sharedData = new Config();
+            ITimeProvider timeProvider = new ClientTimeProvider();
             _systems = new EcsSystems (_world, sharedData);
             _systems
 
                 //SharedSystems
                 .Add(new PlayerSystem())
                 .Add(new ButtonsSystem())
-                .Add(new DoorsSystem())
-                .Add(new MovementSystem())
+                .Add(new DoorsSystem(timeProvider))
+                .Add(new MovementSystem(timeProvider))
 
                 //ClientSystems
                 .Add(new PlayerInputSystem())
