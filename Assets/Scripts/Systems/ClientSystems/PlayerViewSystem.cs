@@ -6,8 +6,6 @@ namespace Client
 {
     public class PlayerViewSystem : IEcsInitSystem, IEcsRunSystem
     {
-        private const string PlayerTag = "Player";
-
         private EcsWorld _world;
 
         public void Init(IEcsSystems systems)
@@ -18,7 +16,7 @@ namespace Client
             var positionViews = _world.GetPool<PositionViewReference>();
             var playerViews = _world.GetPool<PlayerViewReference>();
 
-            var player = GameObject.FindGameObjectWithTag(PlayerTag);
+            var player = GameObject.FindObjectOfType<PlayerView>();
             foreach (var entity in filter)
             {
                 positionViews.Add(entity);
