@@ -1,23 +1,27 @@
 using Leopotam.EcsLite;
+using Shared;
 
-public class MovementViewSystem : IEcsRunSystem
+namespace Client
 {
-    public void Run(IEcsSystems systems)
+    public class MovementViewSystem : IEcsRunSystem
     {
-        var world = systems.GetWorld();
-        
-        var filter = world.Filter<Position>().Inc<PositionViewReference>().End();
-        var movements = world.GetPool<Position>();
-        var views = world.GetPool<PositionViewReference>();
-
-        foreach (var entity in filter)
+        public void Run(IEcsSystems systems)
         {
-            ref var movement = ref movements.Get(entity);
-            ref var view = ref views.Get(entity);
+            var world = systems.GetWorld();
 
-            if (view.transform != null)
+            var filter = world.Filter<Position>().Inc<PositionViewReference>().End();
+            var movements = world.GetPool<Position>();
+            var views = world.GetPool<PositionViewReference>();
+
+            foreach (var entity in filter)
             {
-                view.transform.position = movement.position;
+                ref var movement = ref movements.Get(entity);
+                ref var view = ref views.Get(entity);
+
+                if (view.transform != null)
+                {
+                    view.transform.position = movement.position;
+                }
             }
         }
     }

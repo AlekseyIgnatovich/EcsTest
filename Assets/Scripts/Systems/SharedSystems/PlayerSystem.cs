@@ -1,15 +1,49 @@
 using Leopotam.EcsLite;
 
-public class PlayerSystem : IEcsInitSystem
+namespace Shared
 {
-	public void Init(IEcsSystems systems)
+	public class PlayerSystem : IEcsInitSystem, IEcsRunSystem
 	{
-		var world = systems.GetWorld();
-		int player = world.NewEntity();
+		private EcsWorld _world;
 
-		world.GetPool<Player>().Add(player);
-		world.GetPool<Movement>().Add(player);
-		ref var position = ref world.GetPool<Position>().Add(player);
-		position.radius = 0.5f;
+		public void Init(IEcsSystems systems)
+		{
+			_world = systems.GetWorld();
+			int playerEntity = _world.NewEntity();
+
+			ref var player = ref _world.GetPool<Player>().Add(playerEntity);
+			player.state = PlayerState.Idle;
+			ref var position = ref _world.GetPool<Position>().Add(playerEntity);
+			position.radius = 0.5f;
+		}
+
+		public void Run(IEcsSystems systems)
+		{
+			var filter = _world.Filter<Player>().End();
+			var movements = _world.GetPool<Movement>();
+			var players = _world.GetPool<Player>();
+			var stateChangedPool = _world.GetPool<StateChanged>();
+
+			foreach (var entity in filter)
+			{
+				if (stateChangedPool.Has(entity))
+				{
+					stateChangedPool.Del(entity);
+				}
+
+				ref var player = ref players.Get(entity);
+				if (movements.Has(entity) && player.state != PlayerState.Move)
+				{
+					stateChangedPool.Add(entity);
+					player.state = PlayerState.Move;
+				}
+
+				if (!movements.Has(entity) && player.state != PlayerState.Idle)
+				{
+					stateChangedPool.Add(entity);
+					player.state = PlayerState.Idle;
+				}
+			}
+		}
 	}
 }

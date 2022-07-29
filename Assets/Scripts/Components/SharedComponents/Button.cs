@@ -1,4 +1,7 @@
-public struct Button
+namespace Shared
 {
-	public string configId;
+	public struct Button
+	{
+		public string configId;
+	}
 }

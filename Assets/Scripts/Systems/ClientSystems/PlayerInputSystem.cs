@@ -1,39 +1,44 @@
 using Leopotam.EcsLite;
+using Shared;
 using UnityEngine;
 
-public class PlayerInputSystem : IEcsInitSystem, IEcsRunSystem
+namespace Client
 {
-	private readonly LayerMask _inputMask = ~LayerMask.NameToLayer("Ground");
-	
-	private EcsWorld _world;
-	private Camera _camera;
-	
-	public void Init(IEcsSystems systems)
+	public class PlayerInputSystem : IEcsInitSystem, IEcsRunSystem
 	{
-		_world = systems.GetWorld();
-		_camera = Camera.main;
-	}
+		private readonly LayerMask _inputMask = ~LayerMask.NameToLayer("Ground");
 
-	public void Run(IEcsSystems systems)
-	{
-		if (Input.GetMouseButtonDown(0))
+		private EcsWorld _world;
+		private Camera _camera;
+
+		public void Init(IEcsSystems systems)
 		{
-			RaycastHit hit;
-			Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+			_world = systems.GetWorld();
+			_camera = Camera.main;
+		}
 
-			if (Physics.Raycast(ray, out hit,100, _inputMask))
+		public void Run(IEcsSystems systems)
+		{
+			if (Input.GetMouseButtonDown(0))
 			{
-				var filter = _world.Filter<Player>().End();
-				var movements = _world.GetPool<Movement>();
+				RaycastHit hit;
+				Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-				foreach (var entity in filter)
+				if (Physics.Raycast(ray, out hit, 100, _inputMask))
 				{
-					if (!movements.Has(entity)) {
-						movements.Add(entity);
-					}
+					var filter = _world.Filter<Player>().End();
+					var movements = _world.GetPool<Movement>();
 
-					ref var movement = ref movements.Get(entity);
-					movement.targetPosition = new Vector3(hit.point.x, 0, hit.point.z);
+					foreach (var entity in filter)
+					{
+						if (!movements.Has(entity))
+						{
+							movements.Add(entity);
+						}
+
+						ref var movement = ref movements.Get(entity);
+						movement.targetPosition = new Vector3(hit.point.x, 0, hit.point.z);
+					}
 				}
 			}
 		}

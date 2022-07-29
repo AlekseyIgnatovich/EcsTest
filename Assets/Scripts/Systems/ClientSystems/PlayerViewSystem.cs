@@ -1,24 +1,50 @@
 using Leopotam.EcsLite;
+using Shared;
 using UnityEngine;
 
-public class PlayerViewSystem : IEcsInitSystem
+namespace Client
 {
-    private const string PlayerTag = "Player";
-    
-    public void Init(IEcsSystems systems)
+    public class PlayerViewSystem : IEcsInitSystem, IEcsRunSystem
     {
-        var world = systems.GetWorld();
-        
-        var filter = world.Filter<Player>().End();
-        var viewReferences = world.GetPool<PositionViewReference>();
+        private const string PlayerTag = "Player";
 
-        var playerView = GameObject.FindGameObjectWithTag(PlayerTag);
-        foreach (var entity in filter)
+        private EcsWorld _world;
+
+        public void Init(IEcsSystems systems)
         {
-            viewReferences.Add(entity);
-            ref var reference = ref viewReferences.Get(entity);
+            _world = systems.GetWorld();
 
-            reference.transform = playerView.transform;
+            var filter = _world.Filter<Player>().End();
+            var positionViews = _world.GetPool<PositionViewReference>();
+            var playerViews = _world.GetPool<PlayerViewReference>();
+
+            var player = GameObject.FindGameObjectWithTag(PlayerTag);
+            foreach (var entity in filter)
+            {
+                positionViews.Add(entity);
+
+                ref var position = ref positionViews.Get(entity);
+                position.transform = player.transform;
+
+                ref var animation = ref playerViews.Add(entity);
+                animation.PlayerView = player.GetComponent<PlayerView>();
+            }
+        }
+
+        public void Run(IEcsSystems systems)
+        {
+            var filter = _world.Filter<Player>().Inc<StateChanged>().End();
+
+            var playersPool = _world.GetPool<Player>();
+            var playerViews = _world.GetPool<PlayerViewReference>();
+
+            foreach (var entity in filter)
+            {
+                var player = playersPool.Get(entity);
+                var view = playerViews.Get(entity);
+
+                view.PlayerView.SetState(player.state);
+            }
         }
     }
 }

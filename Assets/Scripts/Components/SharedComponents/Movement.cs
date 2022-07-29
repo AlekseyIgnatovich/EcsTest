@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public struct Movement
+namespace Shared
 {
-	public Vector3 targetPosition;
+	public struct Movement
+	{
+		public Vector3 targetPosition;
+	}
 }

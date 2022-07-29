@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public struct PositionViewReference
+namespace Client
 {
-	public Transform transform;
+	public struct PositionViewReference
+	{
+		public Transform transform;
+	}
 }

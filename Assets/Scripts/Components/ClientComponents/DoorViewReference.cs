@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public struct DoorViewReference
+namespace Client
 {
-    public DoorView doorView;
+	public struct DoorViewReference
+	{
+		public DoorView doorView;
+	}
 }

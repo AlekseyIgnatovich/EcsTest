@@ -1,7 +1,10 @@
 using UnityEngine;
 
-public struct Position 
+namespace Shared
 {
-	public Vector3 position;
-	public float radius;
+	public struct Position
+	{
+		public Vector3 position;
+		public float radius;
+	}
 }

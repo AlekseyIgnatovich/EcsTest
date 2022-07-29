@@ -1,4 +1,7 @@
-public struct Door
+namespace Shared
 {
-    public float openProgress;
+    public struct Door
+    {
+        public float openProgress;
+    }
 }

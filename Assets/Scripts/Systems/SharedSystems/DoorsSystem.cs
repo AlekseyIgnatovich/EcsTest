@@ -1,30 +1,32 @@
 using Leopotam.EcsLite;
-using UnityEngine;
 
-public class DoorsSystem : IEcsInitSystem, IEcsRunSystem
+namespace Shared
 {
-    public void Init(IEcsSystems systems)
+    public class DoorsSystem : IEcsInitSystem, IEcsRunSystem
     {
-        var filterButtons = systems.GetWorld().Filter<Button>().End();
-        var doors = systems.GetWorld().GetPool<Door>();
-
-        foreach (var button in filterButtons)
+        public void Init(IEcsSystems systems)
         {
-            doors.Add(button);
+            var filterButtons = systems.GetWorld().Filter<Button>().End();
+            var doors = systems.GetWorld().GetPool<Door>();
+
+            foreach (var button in filterButtons)
+            {
+                doors.Add(button);
+            }
         }
-    }
 
-    public void Run(IEcsSystems systems)
-    {
-        var filterButtons = systems.GetWorld().Filter<Pressed>().End();
-        var doors = systems.GetWorld().GetPool<Door>();
-
-        foreach (var entity in filterButtons)
+        public void Run(IEcsSystems systems)
         {
-            ref var door = ref doors.Get(entity);
-            door.openProgress += 0.1f * Workaround.Deltatime();
-            if(door.openProgress > 1)
-                door.openProgress = 1;
+            var filterButtons = systems.GetWorld().Filter<Pressed>().End();
+            var doors = systems.GetWorld().GetPool<Door>();
+
+            foreach (var entity in filterButtons)
+            {
+                ref var door = ref doors.Get(entity);
+                door.openProgress += 0.1f * Workaround.Deltatime();
+                if (door.openProgress > 1)
+                    door.openProgress = 1;
+            }
         }
     }
 }

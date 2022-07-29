@@ -1,6 +1,6 @@
 namespace Shared
 {
-	public struct Pressed
+	public struct StateChanged
 	{
 
 	}
