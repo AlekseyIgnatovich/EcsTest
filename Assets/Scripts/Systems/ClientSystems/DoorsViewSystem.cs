@@ -7,16 +7,22 @@ namespace Client
 {
     public class DoorsViewSystem : IEcsInitSystem, IEcsRunSystem
     {
-        private EcsWorld _world;
-        
+        private EcsFilter _pressedFilter;
+
+        private EcsPool<Door> _doors;
+        private EcsPool<DoorViewReference> _doorReferences;
+
         public void Init(IEcsSystems systems)
         {
-            _world = systems.GetWorld();
-            
-            var doorsFilter = _world.Filter<Door>().End();
+            var world = systems.GetWorld();
+            _pressedFilter = world.Filter<Pressed>().End();
+            _doors = world.GetPool<Door>();
+            _doorReferences = world.GetPool<DoorViewReference>();
 
-            var buttons = _world.GetPool<Button>();
-            var doorReferences = _world.GetPool<DoorViewReference>();
+            var doorsFilter = world.Filter<Door>().End();
+
+            var buttons = world.GetPool<Button>();
+            var doorReferences = world.GetPool<DoorViewReference>();
 
             var doorViews = GameObject.FindObjectsOfType<DoorView>();
 
@@ -39,15 +45,10 @@ namespace Client
 
         public void Run(IEcsSystems systems)
         {
-            var pressedFilter = _world.Filter<Pressed>().End();
-
-            var doors = _world.GetPool<Door>();
-            var doorReferences = _world.GetPool<DoorViewReference>();
-
-            foreach (var entity in pressedFilter)
+            foreach (var entity in _pressedFilter)
             {
-                var door = doors.Get(entity);
-                var view = doorReferences.Get(entity).doorView;
+                var door = _doors.Get(entity);
+                var view = _doorReferences.Get(entity).doorView;
 
                 view.UpdateProgress(door.openProgress);
             }

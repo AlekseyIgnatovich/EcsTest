@@ -4,25 +4,36 @@ namespace Shared
 {
     public class ButtonsSystem : IEcsInitSystem, IEcsRunSystem
     {
-        private EcsWorld _world;
+        private EcsFilter _buttonsFilter;
+        private EcsFilter _playersFilter;
+        
+        private EcsPool<Button> _buttons;
+        private EcsPool<Position> _positions;
+        private EcsPool<Pressed> _pressed;
         
         public void Init(IEcsSystems systems)
         {
-            _world = systems.GetWorld();
+            var world = systems.GetWorld();
+
+            _buttonsFilter = world.Filter<Button>().End();
+            _playersFilter = world.Filter<Player>().End();
+            
+            _buttons = world.GetPool<Button>();
+            _positions = world.GetPool<Position>();
+            _pressed = world.GetPool<Pressed>();
+            
             var config = systems.GetShared<Config>();
 
             for (int i = 0; i < config.buttons.Length; i++)
             {
-                int entity = _world.NewEntity();
+                int entity = world.NewEntity();
 
-                var buttons = _world.GetPool<Button>();
-                buttons.Add(entity);
-                var positions = _world.GetPool<Position>();
-                positions.Add(entity);
+                _buttons.Add(entity);
+                _positions.Add(entity);
 
-                ref var button = ref buttons.Get(entity);
+                ref var button = ref _buttons.Get(entity);
                 button.configId = config.buttons[i].configId;
-                ref var position = ref positions.Get(entity);
+                ref var position = ref _positions.Get(entity);
                 position.position = config.buttons[i].position;
                 position.radius = config.buttons[i].radius;
             }
@@ -30,31 +41,25 @@ namespace Shared
 
         public void Run(IEcsSystems systems)
         {
-            var filterButtons = _world.Filter<Button>().End();
-            var filterPlayer = _world.Filter<Player>().End();
-
-            var positions = _world.GetPool<Position>();
-            var pressed = _world.GetPool<Pressed>();
-
-            foreach (var player in filterPlayer)
+            foreach (var player in _playersFilter)
             {
-                ref var playerPosition = ref positions.Get(player);
-                foreach (var button in filterButtons)
+                ref var playerPosition = ref _positions.Get(player);
+                foreach (var button in _buttonsFilter)
                 {
-                    var buttonPosition = positions.Get(button);
+                    var buttonPosition = _positions.Get(button);
 
                     var radius = buttonPosition.radius + playerPosition.radius;
                     var dist = UnityEngine.Vector3.Distance(playerPosition.position, buttonPosition.position);
 
                     if (dist <= radius)
                     {
-                        if (!pressed.Has(button))
-                            pressed.Add(button);
+                        if (!_pressed.Has(button))
+                            _pressed.Add(button);
                     }
                     else
                     {
-                        if (pressed.Has(button))
-                            pressed.Del(button);
+                        if (_pressed.Has(button))
+                            _pressed.Del(button);
                     }
                 }
             }

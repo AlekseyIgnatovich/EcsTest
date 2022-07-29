@@ -8,13 +8,18 @@ namespace Client
 	{
 		private readonly LayerMask _inputMask = 1 << LayerMask.NameToLayer("Ground");
 
-		private EcsWorld _world;
 		private Camera _camera;
 
+		private EcsFilter _playerFilter;
+		private EcsPool<Movement> _movements;
+		
 		public void Init(IEcsSystems systems)
 		{
-			_world = systems.GetWorld();
 			_camera = Camera.main;
+			
+			var world = systems.GetWorld();
+			_playerFilter = world.Filter<Player>().End();
+			_movements = world.GetPool<Movement>();
 		}
 
 		public void Run(IEcsSystems systems)
@@ -26,15 +31,12 @@ namespace Client
 
 			if (Physics.Raycast(ray, out hit, 100, _inputMask))
 			{
-				var playerFilter = _world.Filter<Player>().End();
-				var movements = _world.GetPool<Movement>();
-
-				foreach (var entity in playerFilter)
+				foreach (var entity in _playerFilter)
 				{
-					if (!movements.Has(entity))
-						movements.Add(entity);
+					if (!_movements.Has(entity))
+						_movements.Add(entity);
 
-					ref var movement = ref movements.Get(entity);
+					ref var movement = ref _movements.Get(entity);
 					movement.targetPosition = new Vector3(hit.point.x, 0, hit.point.z);
 				}
 			}

@@ -4,43 +4,48 @@ namespace Shared
 {
 	public class PlayerSystem : IEcsInitSystem, IEcsRunSystem
 	{
-		private EcsWorld _world;
-
+		private EcsFilter _playerFilter;
+        
+		private EcsPool<Player> _players;
+		private EcsPool<Movement> _movements;
+		private EcsPool<StateChanged> _stateChangedEvents;
+		
 		public void Init(IEcsSystems systems)
 		{
-			_world = systems.GetWorld();
-			int playerEntity = _world.NewEntity();
+			var world = systems.GetWorld();
+			int playerEntity = world.NewEntity();
 
-			ref var player = ref _world.GetPool<Player>().Add(playerEntity);
+			_playerFilter = world.Filter<Player>().End();
+
+			_movements = world.GetPool<Movement>();
+			_players = world.GetPool<Player>();
+			_stateChangedEvents = world.GetPool<StateChanged>();
+			
+			ref var player = ref _players.Add(playerEntity);
 			player.state = PlayerState.Idle;
-			ref var position = ref _world.GetPool<Position>().Add(playerEntity);
+			ref var position = ref world.GetPool<Position>().Add(playerEntity);
 			position.radius = 0.5f;
 		}
 
 		public void Run(IEcsSystems systems)
 		{
-			var playerFilter = _world.Filter<Player>().End();
-			var movements = _world.GetPool<Movement>();
-			var players = _world.GetPool<Player>();
-			var stateChangedEvents = _world.GetPool<StateChanged>();
-
-			foreach (var entity in playerFilter)
+			foreach (var entity in _playerFilter)
 			{
-				if (stateChangedEvents.Has(entity))
+				if (_stateChangedEvents.Has(entity))
 				{
-					stateChangedEvents.Del(entity);
+					_stateChangedEvents.Del(entity);
 				}
 
-				ref var player = ref players.Get(entity);
-				if (movements.Has(entity) && player.state != PlayerState.Move)
+				ref var player = ref _players.Get(entity);
+				if (_movements.Has(entity) && player.state != PlayerState.Move)
 				{
-					stateChangedEvents.Add(entity);
+					_stateChangedEvents.Add(entity);
 					player.state = PlayerState.Move;
 				}
 
-				if (!movements.Has(entity) && player.state != PlayerState.Idle)
+				if (!_movements.Has(entity) && player.state != PlayerState.Idle)
 				{
-					stateChangedEvents.Add(entity);
+					_stateChangedEvents.Add(entity);
 					player.state = PlayerState.Idle;
 				}
 			}

@@ -6,40 +6,43 @@ namespace Client
 {
     public class PlayerViewSystem : IEcsInitSystem, IEcsRunSystem
     {
-        private EcsWorld _world;
-
+        private EcsFilter _playerFilter;
+        private EcsFilter _changedFilter;
+        
+        private EcsPool<PositionViewReference> _positionViews;
+        private EcsPool<PlayerViewReference> _playerViews;
+        private EcsPool<Player> _players;
+        
         public void Init(IEcsSystems systems)
         {
-            _world = systems.GetWorld();
+            var world = systems.GetWorld();
 
-            var playerFilter = _world.Filter<Player>().End();
-            var positionViews = _world.GetPool<PositionViewReference>();
-            var playerViews = _world.GetPool<PlayerViewReference>();
+            _playerFilter = world.Filter<Player>().End();
+            _changedFilter = world.Filter<StateChanged>().Inc<Player>().End();
+
+            _positionViews = world.GetPool<PositionViewReference>();
+            _playerViews = world.GetPool<PlayerViewReference>();
+            _players = world.GetPool<Player>();
 
             var player = GameObject.FindObjectOfType<PlayerView>();
-            foreach (var entity in playerFilter)
+            foreach (var entity in _playerFilter)
             {
-                positionViews.Add(entity);
+                _positionViews.Add(entity);
 
-                ref var position = ref positionViews.Get(entity);
+                ref var position = ref _positionViews.Get(entity);
                 position.transform = player.transform;
 
-                ref var animation = ref playerViews.Add(entity);
+                ref var animation = ref _playerViews.Add(entity);
                 animation.PlayerView = player.GetComponent<PlayerView>();
             }
         }
 
         public void Run(IEcsSystems systems)
         {
-            var stateChangedFilter = _world.Filter<StateChanged>().Inc<Player>().End();
-
-            var playersPool = _world.GetPool<Player>();
-            var playerViews = _world.GetPool<PlayerViewReference>();
-
-            foreach (var entity in stateChangedFilter)
+            foreach (var entity in _changedFilter)
             {
-                var player = playersPool.Get(entity);
-                var view = playerViews.Get(entity);
+                var player = _players.Get(entity);
+                var view = _playerViews.Get(entity);
 
                 view.PlayerView.SetState(player.state);
             }
