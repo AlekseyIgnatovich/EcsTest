@@ -6,7 +6,7 @@ namespace Client
 {
 	public class PlayerInputSystem : IEcsInitSystem, IEcsRunSystem
 	{
-		private readonly LayerMask _inputMask = ~LayerMask.NameToLayer("Ground");
+		private readonly LayerMask _inputMask = 1 << LayerMask.NameToLayer("Ground");
 
 		private EcsWorld _world;
 		private Camera _camera;
