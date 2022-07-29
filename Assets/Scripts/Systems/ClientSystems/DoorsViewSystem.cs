@@ -16,6 +16,7 @@ namespace Client
         {
             var world = systems.GetWorld();
             _pressedFilter = world.Filter<Pressed>().End();
+            
             _doors = world.GetPool<Door>();
             _doorReferences = world.GetPool<DoorViewReference>();
 

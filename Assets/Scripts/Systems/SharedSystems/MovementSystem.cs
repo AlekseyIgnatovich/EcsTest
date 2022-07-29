@@ -23,6 +23,7 @@ namespace Shared
             var world = systems.GetWorld();
 
             _movementsFilter = world.Filter<Movement>().End();
+            
             _movements = world.GetPool<Movement>();
             _transforms = world.GetPool<TransformCmp>();
         }
