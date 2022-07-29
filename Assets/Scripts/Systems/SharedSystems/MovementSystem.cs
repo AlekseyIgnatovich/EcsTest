@@ -11,7 +11,7 @@ namespace Shared
         private EcsFilter _movementsFilter;
         
         private EcsPool<Movement> _movements;
-        private EcsPool<Position> _position;
+        private EcsPool<TransformCmp> _transforms;
 
         public MovementSystem(ITimeProvider timeProvider)
         {
@@ -24,14 +24,14 @@ namespace Shared
 
             _movementsFilter = world.Filter<Movement>().End();
             _movements = world.GetPool<Movement>();
-            _position = world.GetPool<Position>();
+            _transforms = world.GetPool<TransformCmp>();
         }
         
         public void Run(IEcsSystems systems)
         {
             foreach (var entity in _movementsFilter)
             {
-                ref var position = ref _position.Get(entity);
+                ref var position = ref _transforms.Get(entity);
                 var movement = _movements.Get(entity);
 
                 var distanceVector = movement.targetPosition - position.position;

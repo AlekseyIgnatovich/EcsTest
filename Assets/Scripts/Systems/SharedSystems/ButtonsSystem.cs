@@ -8,7 +8,7 @@ namespace Shared
         private EcsFilter _playersFilter;
         
         private EcsPool<Button> _buttons;
-        private EcsPool<Position> _positions;
+        private EcsPool<TransformCmp> _transforms;
         private EcsPool<Pressed> _pressed;
         
         public void Init(IEcsSystems systems)
@@ -19,7 +19,7 @@ namespace Shared
             _playersFilter = world.Filter<Player>().End();
             
             _buttons = world.GetPool<Button>();
-            _positions = world.GetPool<Position>();
+            _transforms = world.GetPool<TransformCmp>();
             _pressed = world.GetPool<Pressed>();
             
             var config = systems.GetShared<Config>();
@@ -29,11 +29,11 @@ namespace Shared
                 int entity = world.NewEntity();
 
                 _buttons.Add(entity);
-                _positions.Add(entity);
+                _transforms.Add(entity);
 
                 ref var button = ref _buttons.Get(entity);
                 button.configId = config.buttons[i].configId;
-                ref var position = ref _positions.Get(entity);
+                ref var position = ref _transforms.Get(entity);
                 position.position = config.buttons[i].position;
                 position.radius = config.buttons[i].radius;
             }
@@ -43,10 +43,10 @@ namespace Shared
         {
             foreach (var player in _playersFilter)
             {
-                ref var playerPosition = ref _positions.Get(player);
+                ref var playerPosition = ref _transforms.Get(player);
                 foreach (var button in _buttonsFilter)
                 {
-                    var buttonPosition = _positions.Get(button);
+                    var buttonPosition = _transforms.Get(button);
 
                     var radius = buttonPosition.radius + playerPosition.radius;
                     var dist = UnityEngine.Vector3.Distance(playerPosition.position, buttonPosition.position);

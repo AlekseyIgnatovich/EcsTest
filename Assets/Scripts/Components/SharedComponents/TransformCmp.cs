@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Shared
 {
-	public struct Position
+	public struct TransformCmp
 	{
 		public Vector3 position;
 		public float radius;

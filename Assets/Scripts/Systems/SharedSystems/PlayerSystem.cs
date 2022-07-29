@@ -23,8 +23,8 @@ namespace Shared
 			
 			ref var player = ref _players.Add(playerEntity);
 			player.state = PlayerState.Idle;
-			ref var position = ref world.GetPool<Position>().Add(playerEntity);
-			position.radius = 0.5f;
+			ref var transform = ref world.GetPool<TransformCmp>().Add(playerEntity);
+			transform.radius = 0.5f;
 		}
 
 		public void Run(IEcsSystems systems)
