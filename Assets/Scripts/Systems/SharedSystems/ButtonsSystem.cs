@@ -35,7 +35,7 @@ namespace Shared
                 button.configId = config.buttons[i].configId;
                 ref var position = ref _transforms.Get(entity);
                 position.position = config.buttons[i].position;
-                position.radius = config.buttons[i].radius;
+                position.scale = config.buttons[i].scale;
             }
         }
 
@@ -48,7 +48,7 @@ namespace Shared
                 {
                     var buttonPosition = _transforms.Get(button);
 
-                    var radius = buttonPosition.radius + playerPosition.radius;
+                    var radius = buttonPosition.scale + playerPosition.scale;
                     var dist = UnityEngine.Vector3.Distance(playerPosition.position, buttonPosition.position);
 
                     if (dist <= radius)

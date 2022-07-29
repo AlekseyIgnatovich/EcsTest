@@ -14,14 +14,14 @@ namespace Shared
 				{
 					configId = "Blue",
 					position = new Vector3(-7.3f, 0, -12.03f),
-					radius = 1
+					scale = 1
 				},
 
 				new ButtonConfig()
 				{
 					configId = "Red",
 					position = new Vector3(8, 0, -12.03f),
-					radius = 1
+					scale = 1
 				}
 			};
 		}
@@ -30,7 +30,7 @@ namespace Shared
 		{
 			public string configId;
 			public Vector3 position;
-			public float radius;
+			public float scale;
 		}
 	}
 }

@@ -5,6 +5,6 @@ namespace Shared
 	public struct TransformCmp
 	{
 		public Vector3 position;
-		public float radius;
+		public float scale;
 	}
 }
